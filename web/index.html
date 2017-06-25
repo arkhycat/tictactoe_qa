@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Game setup</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+      <form action="myservlet" method="GET">
+         <input type="hidden" name="new_game" value="true">
+         Board size: <input type="number" name="board_size" required>
+         Winning length: <input type="number" name="winning_length" required>
+         <br />
+         First player: X<input type="radio" name="first_player" value="X">
+         O<input type="radio" name="first_player" value="O" checked="checked">
+         <input type="submit" name="submit" value="Submit" />
+         
+      </form>
+    </body>
+</html>
