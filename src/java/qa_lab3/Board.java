@@ -86,4 +86,7 @@ public class Board {
         return TicTacToeHelper.Player.None;
     }
     
+    public TicTacToeHelper.Player getCellPlayer(int i, int j) {
+        return board[i][j];
+    }
 }

@@ -7,6 +7,7 @@ package qa_lab3;
  */
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -65,6 +66,7 @@ public class GameServlet extends HttpServlet {
             
         } 
 
+
         try (PrintWriter out = response.getWriter()) {
             out.println("<!DOCTYPE html>");
             out.println("<html>"); 
@@ -76,38 +78,78 @@ public class GameServlet extends HttpServlet {
             out.println("<form action=\"myservlet\" method=\"GET\">");
             out.println("<input type=\"submit\" name=\"move\" value=\"Make move\" id=\"makemove\">");
             out.println("<input type=\"submit\" name=\"move\" value=\"Best move\"/ id=\"bestmove\">");
-            try {
-            if (request.getParameter("move").equals("Best move")) {
-                Move m = game.getWinningMove(pl);
-                if (m != null) {
-                    out.println("<input type=\"number\" name=\"x\"/ value="+m.getX()+">");
-                    out.println("<input type=\"number\" name=\"y\"/ value="+m.getY()+">");
-                } else {
-                    out.println("<input type=\"number\" name=\"x\"/>");
-                    out.println("<input type=\"number\" name=\"y\"/>");
-                    out.println("impossible to win");
-                }
-                    
-            } else {
-                if (request.getParameter("move").equals("Make move")) {
-                    Integer x, y;
-                    try {
-                        x = Integer.parseInt(request.getParameter("x"));
-                        y = Integer.parseInt(request.getParameter("y"));
-                        Move m = new Move(x, y, pl);
-                        game.makeMove(m);
-                    } catch(Exception e) {
-                        throw new BadRequestException("failed to make move"+e.getMessage());
+            if (request.getParameterMap().containsKey("move")) {
+                if (request.getParameter("move").equals("Best move")) {
+                    Move m = game.getWinningMove(pl);
+                    if (m != null) {
+                        out.println("x "+m.getX().toString());
+                        out.println("y "+m.getY().toString());
+                    } else {
+                        out.println("impossible to win");
                     }
-                    pl = TicTacToeHelper.other(pl);
-                    
-                    out.println("<input type=\"number\" name=\"x\"/>");
-                    out.println("<input type=\"number\" name=\"y\"/>");
-                }
-            }
-            } catch (Exception e) {
+                    int gameSize = game.getBoard().size();
+                    out.println("<br/>");
+                    for (int i = 0; i < gameSize; i++) {
+
+                        for (int j = 0; j < gameSize; j++) {
+                            if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.X) {
+                                out.format(" X ");
+                            } else if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.O) {
+                                out.format(" O ");
+                            } else{
+                                    out.format("<input type=\"radio\" name=\"cell\" value=\"%d_%d\"/>", i, j);
+                            }
+                        }
+                        out.println("<br/>");
+                    }
+
+
+                } else if (request.getParameter("move").equals("Make move")) {
+                        Integer x, y;
+                        try {
+                            String cell = request.getParameter("cell");
+                            x = Integer.parseInt(cell.split("_")[0]);
+                            y = Integer.parseInt(cell.split("_")[1]);
+                            Move m = new Move(x, y, pl);
+                            game.makeMove(m);
+                        } catch(Exception e) {
+                            throw new BadRequestException("failed to make move"+e.getMessage());
+                        }
+                        pl = TicTacToeHelper.other(pl);
+
+                        int gameSize = game.getBoard().size();
+                        out.println("<br/>");
+                        for (int i = 0; i < gameSize; i++) {
+
+                            for (int j = 0; j < gameSize; j++) {
+                                if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.X) {
+                                    out.format(" X ");
+                                } else if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.O) {
+                                    out.format(" O ");
+                                } else{
+                                    out.format("<input type=\"radio\" name=\"cell\" value=\"%d_%d\"/>", i, j);
+                                }
+                            }
+                            out.println("<br/>");
+                        }
+                    }
+            } else {
                 out.println("<input type=\"number\" name=\"x\"/>");
                 out.println("<input type=\"number\" name=\"y\"/>");
+                int gameSize = game.getBoard().size();
+                out.println("<br/>");
+                for (int i = 0; i < gameSize; i++) {
+                    for (int j = 0; j < gameSize; j++) {
+                        if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.X) {
+                            out.format(" X ");
+                        } else if (game.getBoard().getCellPlayer(i, j) == TicTacToeHelper.Player.O) {
+                            out.format(" O ");
+                        } else{
+                            out.format("<input type=\"radio\" name=\"cell\" value=\"%d_%d\"/>", i, j);
+                        }
+                    }
+                    out.println("<br/>");
+                }
             }
             
             if (pl.equals(Player.O)) {
